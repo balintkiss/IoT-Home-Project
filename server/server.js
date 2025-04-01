@@ -35,6 +35,7 @@ const adminUser = {
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.set('trust proxy', 1);
 app.use(session({
   secret: process.env.SESSION_SECRET || 'mySecretKey',
   resave: false,
