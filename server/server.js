@@ -40,8 +40,8 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'none',
+    secure: true, // kötelező HTTPS miatt
+    sameSite: 'none', // külön domainről érkezik a kérés
     httpOnly: true
   }
 }));
