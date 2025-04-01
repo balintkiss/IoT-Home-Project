@@ -215,9 +215,3 @@ function acceptCookies() {
 
 window.onload = checkCookiePermission;
 
-// === Service Worker regisztrálása ===
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/service-worker.js')
-    .then(() => console.log("✅ Service Worker regisztrálva"))
-    .catch(err => console.error("❌ SW hiba:", err));
-}
