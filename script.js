@@ -1,3 +1,5 @@
+const API_BASE_URL = 'https://api.balintkiss.hu';
+
 // === Szenzor adatainak frissítése ===
 async function fetchData() {
   try {
@@ -6,7 +8,6 @@ async function fetchData() {
     const lastEntry = data.feeds[0];
     const temp = parseFloat(lastEntry.field1);
     const humidity = parseFloat(lastEntry.field2);
-    const API_BASE_URL = 'https://api.balintkiss.hu';
 
 
     document.getElementById('temperature').innerText = temp + " °C";
@@ -109,7 +110,7 @@ function renderModalContent() {
       const username = document.getElementById('modalUsername').value;
       const password = document.getElementById('modalPassword').value;
 
-      fetch('https://iot-home-project.onrender.com/login', {
+      fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -150,7 +151,8 @@ function toggleSmartPlug(isOn) {
   .then(response => response.json())
   .then(data => {
     console.log("Smart plug válasz:", data);
-  })
+    updatePlugUI(data.isOn); // GUI is frissül az új állapottal
+  })  
   .catch(error => console.error("Hiba a smart plug váltásakor:", error));
 }
 
@@ -160,21 +162,23 @@ function fetchSmartPlugStatus() {
   })
     .then(response => response.json())
     .then(data => {
-      const isOn = data.isOn;
-      const toggle = document.getElementById('smartPlugToggle');
-      const statusText = document.getElementById('smartPlugStatus');
-      const wifiStatus = document.getElementById('wifiStatus');
-
-      if (toggle) toggle.checked = isOn;
-      if (statusText) statusText.innerText = isOn ? "Be" : "Ki";
-      if (wifiStatus) {
-        wifiStatus.innerText = isOn ? "Wifi bekapcsolva" : "Wifi kikapcsolva";
-        wifiStatus.className = 'smart-plug-status ' + (isOn ? 'on' : 'off');
-      }
+      updatePlugUI(data.isOn);
     })
     .catch(error => console.error('Nem sikerült lekérdezni a smart plug állapotát:', error));
 }
 
+function updatePlugUI(isOn) {
+  const toggle = document.getElementById('smartPlugToggle');
+  const statusText = document.getElementById('smartPlugStatus');
+  const wifiStatus = document.getElementById('wifiStatus');
+
+  if (toggle) toggle.checked = isOn;
+  if (statusText) statusText.innerText = isOn ? "Be" : "Ki";
+  if (wifiStatus) {
+    wifiStatus.innerText = isOn ? "Wifi bekapcsolva" : "Wifi kikapcsolva";
+    wifiStatus.className = 'smart-plug-status ' + (isOn ? 'on' : 'off');
+  }
+}
 
 function logoutAdmin() {
   fetch(`${API_BASE_URL}/logout`, {
