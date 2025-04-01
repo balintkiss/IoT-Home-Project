@@ -4,9 +4,10 @@ async function fetchData() {
     const response = await fetch('https://api.thingspeak.com/channels/2875631/feeds.json?results=1');
     const data = await response.json();
     const lastEntry = data.feeds[0];
-
     const temp = parseFloat(lastEntry.field1);
     const humidity = parseFloat(lastEntry.field2);
+    const API_BASE_URL = 'https://api.balintkiss.hu';
+
 
     document.getElementById('temperature').innerText = temp + " °C";
     document.getElementById('humidity').innerText = humidity + " %";
@@ -108,7 +109,7 @@ function renderModalContent() {
       const username = document.getElementById('modalUsername').value;
       const password = document.getElementById('modalPassword').value;
 
-      fetch('https://balintkiss-github-io.onrender.com/login', {
+      fetch('https://iot-home-project.onrender.com/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -140,7 +141,7 @@ function toggleSmartPlug(isOn) {
   wifiStatus.innerText = isOn ? "Wifi bekapcsolva" : "Wifi kikapcsolva";
   wifiStatus.className = 'smart-plug-status ' + (isOn ? 'on' : 'off');
 
-  fetch('https://balintkiss-github-io.onrender.com/api/smartplug', {
+  fetch(`${API_BASE_URL}/api/smartplug`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include', // 🔥 EZ KÜLDI A SESSION COOKIE-T
@@ -154,7 +155,7 @@ function toggleSmartPlug(isOn) {
 }
 
 function fetchSmartPlugStatus() {
-  fetch('https://balintkiss-github-io.onrender.com/api/smartplug', {
+  fetch(`${API_BASE_URL}/api/smartplug`, {
     credentials: 'include'
   })
     .then(response => response.json())
@@ -176,7 +177,7 @@ function fetchSmartPlugStatus() {
 
 
 function logoutAdmin() {
-  fetch('https://balintkiss-github-io.onrender.com/logout', {
+  fetch(`${API_BASE_URL}/logout`, {
     method: 'POST',
     credentials: 'include'
   })

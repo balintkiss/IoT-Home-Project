@@ -11,7 +11,7 @@ const app = express();
 
 // === CORS Beállítás (GitHub Pages frontendhez) ===
 const corsOptions = {
-  origin: 'https://balintkiss.github.io',
+  origin: 'https://balintkiss.hu',
   credentials: true,
   methods: ['GET', 'POST', 'OPTIONS']
 };
