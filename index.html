@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Illyés Gyulai Lakás - Hőmérséklet és Páratartalom</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+</head>
+<body>
+  <div class="container">
+    <h2>Illyés Gyulai Lakás</h2>
+    <p>Élő Hőmérséklet és Páratartalom</p>
+
+    <div class="sensor">
+      <i class="fas fa-thermometer-half icon"></i>
+      <span>Hőmérséklet: <span id="temperature">Loading...</span></span>
+    </div>
+
+    <div class="sensor">
+      <i class="fas fa-tint icon"></i>
+      <span>Páratartalom: <span id="humidity">Loading...</span></span>
+    </div>
+
+    <p id="overall-status" class="status">Checking...</p>
+
+    <div class="more-info">
+      <button class="more-btn" onclick="toggleCharts()">
+        <i class="fas fa-chart-line"></i> Tovább
+      </button>
+      <div class="charts" id="charts">
+        <iframe src="https://thingspeak.com/channels/2875631/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true"></iframe>
+        <iframe src="https://thingspeak.com/channels/2875631/charts/2?bgcolor=%23ffffff&color=%2300aaff&dynamic=true"></iframe>
+      </div>
+    </div>
+
+    <div class="settings">
+      <button class="settings-btn" onclick="openAdminModal()">
+        <i class="fas fa-cog"></i> Beállítások
+      </button>
+    </div>
+  </div>
+
+  <!-- Admin Modal -->
+  <div id="adminModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeAdminModal()">&times;</span>
+      <div id="modal-body">
+        <!-- Dinamikus tartalom: login form vagy admin panel -->
+      </div>
+    </div>
+  </div>
+
+  <div id="cookie-banner" style="display: none;">
+    Ez az oldal sütiket használ a bejelentkezéshez.
+    <button onclick="acceptCookies()">Elfogadom</button>
+  </div>
+  
+
+  <script src="script.js"></script>
+</body>
+</html>
