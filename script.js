@@ -175,6 +175,12 @@ function toggleSmartPlug(isOn) {
 }
 
 function fetchSmartPlugStatus() {
+  const wifiStatus = document.getElementById('wifiStatus'); // 💡 Ezt ide be kell tenni!
+  if (wifiStatus) {
+    wifiStatus.innerText = 'Állapot lekérése...';
+    wifiStatus.className = 'smart-plug-status loading';
+  }
+
   fetch(`${API_BASE_URL}/api/smartplug`, {
     credentials: 'include'
   })
@@ -182,7 +188,13 @@ function fetchSmartPlugStatus() {
     .then(data => {
       updatePlugUI(data.isOn);
     })
-    .catch(error => console.error('Nem sikerült lekérdezni a smart plug állapotát:', error));
+    .catch(error => {
+      console.error('Nem sikerült lekérdezni a smart plug állapotát:', error);
+      if (wifiStatus) {
+        wifiStatus.innerText = 'Hiba az állapot lekérésekor';
+        wifiStatus.className = 'smart-plug-status error';
+      }
+    });
 }
 
 function updatePlugUI(isOn) {
