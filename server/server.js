@@ -108,15 +108,25 @@ const WifiState = mongoose.model('WifiState', wifiSchema);
 // === Smart Plug állapot lekérése ===
 app.get('/api/smartplug', async (req, res) => {
   try {
-    let state = await WifiState.findOne();
-    if (!state) {
-      state = new WifiState({ state: 'off' });
-      await state.save();
-    }
-    res.json({ isOn: state.state === 'on' });
+    const response = await axios.post(
+      `https://shelly-172-eu.shelly.cloud/v2/devices/api/get?auth_key=${process.env.SHELLY_AUTH_KEY}`,
+      {
+        ids: [process.env.SHELLY_DEVICE_ID],
+        select: ["status"]
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    const isOn = response.data?.[0]?.status?.switch?.[0]?.output;
+    res.json({ isOn: isOn === true });
+
   } catch (err) {
-    console.error("❌ Hiba a GET /api/smartplug során:", err);
-    res.status(500).json({ message: 'Szerverhiba' });
+    console.error("❌ Hiba a smart plug állapot lekérdezése során:", err.message);
+    res.status(500).json({ message: 'Nem sikerült lekérdezni az állapotot' });
   }
 });
 
@@ -138,14 +148,16 @@ app.post('/api/smartplug', async (req, res) => {
     }
     await state.save();
     console.log(`✅ Smart plug állapota mentve: ${newState}`);
+    
 
     // 🔌 Cloud vezérlés
-    await axios.get("https://api.shelly.cloud/device/relay/control", {
-      params: {
-        id: process.env.SHELLY_DEVICE_ID,
-        channel: 0,
-        turn: newState,
-        auth_key: process.env.SHELLY_AUTH_KEY
+    await axios.post(`https://shelly-172-eu.shelly.cloud/v2/devices/api/set/switch?auth_key=${process.env.SHELLY_AUTH_KEY}`, {
+      id: process.env.SHELLY_DEVICE_ID,
+      channel: 0,
+      on: newState === "on"
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
       }
     });
 
