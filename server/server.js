@@ -105,7 +105,7 @@ const wifiSchema = new mongoose.Schema({
 });
 const WifiState = mongoose.model('WifiState', wifiSchema);
 
-// === Smart Plug állapot lekérése ===
+
 // === Smart Plug állapot lekérése ===
 app.get('/api/smartplug', async (req, res) => {
   try {
@@ -116,20 +116,25 @@ app.get('/api/smartplug', async (req, res) => {
         select: ["status"]
       },
       {
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        headers: { 'Content-Type': 'application/json' }
       }
     );
 
     const isOn = response.data?.[0]?.status?.switch?.[0]?.output;
-    res.json({ isOn: isOn === true });
+    return res.json({ isOn: isOn === true });
 
   } catch (err) {
-    console.error("❌ Hiba a smart plug állapot lekérdezése során:", err.message);
-    res.status(500).json({ message: 'Nem sikerült lekérdezni az állapotot' });
+    console.warn("⚠️ Shelly API nem elérhető, fallback MongoDB");
+    try {
+      const saved = await WifiState.findOne();
+      return res.json({ isOn: saved?.state === 'on' });
+    } catch (dbErr) {
+      console.error("❌ MongoDB hiba fallbacknél:", dbErr.message);
+      return res.status(500).json({ message: 'Nem sikerült lekérdezni az állapotot' });
+    }
   }
 });
+
 
 
 // === Smart Plug vezérlés és mentés ===
@@ -142,13 +147,11 @@ app.post('/api/smartplug', async (req, res) => {
   const newState = isOn ? 'on' : 'off';
 
   try {
-    let state = await WifiState.findOne();
-    if (!state) {
-      state = new WifiState({ state: newState });
-    } else {
-      state.state = newState;
-    }
-    await state.save();
+    await WifiState.findOneAndUpdate(
+      {},
+      { state: newState },
+      { upsert: true, new: true }
+    );
     console.log(`✅ Smart plug állapota mentve: ${newState}`);
     
 
