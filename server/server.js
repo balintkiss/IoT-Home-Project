@@ -106,6 +106,7 @@ const wifiSchema = new mongoose.Schema({
 const WifiState = mongoose.model('WifiState', wifiSchema);
 
 // === Smart Plug állapot lekérése ===
+// === Smart Plug állapot lekérése ===
 app.get('/api/smartplug', async (req, res) => {
   try {
     const response = await axios.post(
@@ -129,6 +130,7 @@ app.get('/api/smartplug', async (req, res) => {
     res.status(500).json({ message: 'Nem sikerült lekérdezni az állapotot' });
   }
 });
+
 
 // === Smart Plug vezérlés és mentés ===
 app.post('/api/smartplug', async (req, res) => {
