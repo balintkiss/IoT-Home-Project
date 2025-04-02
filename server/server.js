@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
@@ -8,6 +10,8 @@ const cors = require('cors');
 const path = require('path');
 const mongoose = require('mongoose');
 const app = express();
+const axios = require('axios');
+
 
 // === CORS Beállítás (GitHub Pages frontendhez) ===
 const corsOptions = {
@@ -134,6 +138,12 @@ app.post('/api/smartplug', async (req, res) => {
     }
     await state.save();
     console.log(`✅ Smart plug állapota mentve: ${newState}`);
+
+    // 🔌 Shelly vezérlés
+    const shellyIp = process.env.SHELLY_IP; // vagy használd .env-ből
+    await axios.get(`http://${shellyIp}/relay/0?turn=${newState}`);
+    console.log(`🔁 Shelly plug kapcsolva: ${newState}`);
+
     res.json({ success: true, isOn });
   } catch (err) {
     console.error("❌ Hiba a POST /api/smartplug során:", err);
