@@ -85,13 +85,14 @@ function closeAdminModal() {
 
 function renderModalContent() {
   const modalBody = document.getElementById('modal-body');
+
   if (sessionStorage.getItem('admin') === 'true') {
     modalBody.innerHTML = `
       <h2>Admin Panel</h2>
       <div class="smart-plug-toggle">
         <div id="wifiStatus" class="smart-plug-status off">Wifi kikapcsolva</div>
         <label class="switch">
-          <input type="checkbox" id="smartPlugToggle" onchange="toggleSmartPlug(this.checked)">
+          <input type="checkbox" id="smartPlugToggle">
           <span class="slider"></span>
         </label>
         <span id="smartPlugStatus">Ki</span>
@@ -99,7 +100,19 @@ function renderModalContent() {
 
       <button onclick="logoutAdmin()" class="logout-btn">Kijelentkezés</button>
     `;
-    fetchSmartPlugStatus();
+
+    // DOM betöltés után (ez garantálja, hogy léteznek már a toggle elemek)
+    setTimeout(() => {
+      const toggle = document.getElementById('smartPlugToggle');
+      if (toggle) {
+        toggle.addEventListener('change', () => {
+          toggleSmartPlug(toggle.checked);
+        });
+      }
+
+      // 🎯 Backend állapot lekérése mindig frissen
+      fetchSmartPlugStatus();
+    }, 0);
   } else {
     modalBody.innerHTML = `
       <h2>Admin bejelentkezés</h2>
@@ -125,7 +138,7 @@ function renderModalContent() {
       .then(data => {
         if (data.message === 'Sikeres bejelentkezés') {
           sessionStorage.setItem('admin', 'true');
-          renderModalContent();
+          renderModalContent(); // újratölti az admin panelt
         } else {
           document.getElementById('modalError').textContent = data.message || 'Hiba történt a bejelentkezés során.';
         }
