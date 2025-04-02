@@ -72,6 +72,11 @@ function toggleCharts() {
 function openAdminModal() {
   document.getElementById('adminModal').style.display = 'block';
   renderModalContent();
+
+  // 🔥 Mindig friss állapot lekérése, ha már be vagyunk jelentkezve
+  if (sessionStorage.getItem('admin') === 'true') {
+    fetchSmartPlugStatus();
+  }
 }
 
 function closeAdminModal() {
