@@ -201,6 +201,7 @@ function updatePlugUI(isOn) {
   const toggle = document.getElementById('smartPlugToggle');
   const statusText = document.getElementById('smartPlugStatus');
   const wifiStatus = document.getElementById('wifiStatus');
+  const plugStatus = document.getElementById('plug-status'); // 👈 új elem
 
   if (toggle) toggle.checked = isOn;
   if (statusText) statusText.innerText = isOn ? "Be" : "Ki";
@@ -208,7 +209,19 @@ function updatePlugUI(isOn) {
     wifiStatus.innerText = isOn ? "Wifi bekapcsolva" : "Wifi kikapcsolva";
     wifiStatus.className = 'smart-plug-status ' + (isOn ? 'on' : 'off');
   }
+
+  // ✅ Új visszajelzés
+  if (plugStatus) {
+    if (isOn) {
+      plugStatus.innerHTML = '<i class="fas fa-circle-check" style="color: lightgreen;"></i> Konnektor bekapcsolva';
+      plugStatus.className = 'status plug-on';
+    } else {
+      plugStatus.innerHTML = '<i class="fas fa-circle-xmark" style="color: gray;"></i> Konnektor kikapcsolva';
+      plugStatus.className = 'status plug-off';
+    }
+  }
 }
+
 
 function logoutAdmin() {
   fetch(`${API_BASE_URL}/logout`, {
