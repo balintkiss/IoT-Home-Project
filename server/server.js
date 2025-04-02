@@ -139,17 +139,24 @@ app.post('/api/smartplug', async (req, res) => {
     await state.save();
     console.log(`✅ Smart plug állapota mentve: ${newState}`);
 
-    // 🔌 Shelly vezérlés
-    const shellyIp = process.env.SHELLY_IP; // vagy használd .env-ből
-    await axios.get(`http://${shellyIp}/relay/0?turn=${newState}`);
-    console.log(`🔁 Shelly plug kapcsolva: ${newState}`);
+    // 🔌 Cloud vezérlés
+    await axios.get("https://api.shelly.cloud/device/relay/control", {
+      params: {
+        id: process.env.SHELLY_DEVICE_ID,
+        channel: 0,
+        turn: newState,
+        auth_key: process.env.SHELLY_AUTH_KEY
+      }
+    });
 
+    console.log(`🔁 Shelly Cloud kapcsolás sikeres: ${newState}`);
     res.json({ success: true, isOn });
   } catch (err) {
-    console.error("❌ Hiba a POST /api/smartplug során:", err);
-    res.status(500).json({ message: 'Szerverhiba' });
+    console.error("❌ Hiba a Cloud vezérlés során:", err.message);
+    res.status(500).json({ message: 'Hiba a konnektor vezérlése közben' });
   }
 });
+
 
 // === Server indítás ===
 const PORT = process.env.PORT || 3000;
