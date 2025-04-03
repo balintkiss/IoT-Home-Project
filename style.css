@@ -282,3 +282,15 @@ input:checked + .slider:before {
   color: white;
   cursor: pointer;
 }
+
+@media (max-width: 800px) {
+  body {
+    display: block !important;
+    padding: 10px !important;
+    min-height: auto !important;
+  }
+
+  .container {
+    margin-top: 0 !important;
+  }
+}
